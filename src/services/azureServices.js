@@ -9,17 +9,9 @@ const AZURE_PROJECTS_URL = `https://dev.azure.com/webrange/_apis/projects?api-ve
 
 const AZURE_TEAM_URL = `https://dev.azure.com/webrange/_apis/projects?api-version=6.0`;
 
-// const AZURE_TOKEN = process.env.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN;
-
-// console.log("Azure token", AZURE_TOKEN);
-const name = process.env.AZURE_ORG_NAME;
-
-console.log("hello", name);
-
 const getProjects = async () => {
   const orgUrl = process.env.AZURE_DEVOPS_ORG_URL;
   const token = process.env.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN;
-  console.log("token", token);
 
   const config = {
     headers: {
@@ -248,12 +240,9 @@ const getProjectWorkItems = async (projectName) => {
         config
       );
 
-      console.log("Batch response:", batchResponse.data);
-
-      // Return detailed work items
       return { workItems: batchResponse.data.value };
     } else {
-      return { workItems: [] }; // Return empty array if no work items found
+      return { workItems: [] };
     }
   } catch (error) {
     // Handle errors
@@ -302,7 +291,6 @@ const getUserByEmail = async (email) => {
     );
 
     const projects = response.data.value;
-    console.log("projects from azure", projects);
 
     const projectPromises = projects.map(async (project) => {
       try {

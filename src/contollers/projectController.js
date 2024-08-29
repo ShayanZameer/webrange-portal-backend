@@ -159,8 +159,6 @@ exports.getWorkItemHistory = async (req, res) => {
       timeInStateSeconds[state] = timeInState[state]; // Time is already in seconds
     });
 
-    console.log(timeInStateSeconds);
-
     res.status(200).json({
       data: timeInStateSeconds,
     });
@@ -217,106 +215,9 @@ const calculateWorkingTime = (
   return totalTime;
 };
 
-// exports.getWorkItemHistory = async (req, res) => {
-//   const { project, id } = req.body;
-
-//   if (!project) {
-//     console.error("Missing project parameter");
-//     return res
-//       .status(400)
-//       .json({ message: "Project is a required parameter." });
-//   }
-
-//   if (!id) {
-//     console.error("Missing id parameter");
-//     return res.status(400).json({ message: "ID is a required parameter." });
-//   }
-
-//   try {
-//     const data = await azureDevOpsService.getWorkItemHistory(project, id);
-
-//     let stateChanges = [];
-
-//     // Iterate through updates
-//     data.value.forEach((update) => {
-//       const rev = update.rev;
-//       const newState = update.fields["System.State"]
-//         ? update.fields["System.State"].newValue
-//         : null;
-//       const changeDate = update.fields["Microsoft.VSTS.Common.StateChangeDate"]
-//         ? new Date(
-//             update.fields["Microsoft.VSTS.Common.StateChangeDate"].newValue
-//           )
-//         : null;
-
-//       if (newState && changeDate) {
-//         stateChanges.push({
-//           revision: rev,
-//           state: newState,
-//           changeDate: changeDate,
-//         });
-//       }
-//     });
-
-//     stateChanges.sort((a, b) => a.changeDate - b.changeDate);
-
-//     let timeInState = {};
-//     let previousState = null;
-//     let lastChangeDate = null;
-
-//     stateChanges.forEach((change) => {
-//       const currentState = change.state;
-//       const changeDate = change.changeDate;
-
-//       if (currentState !== previousState) {
-//         if (previousState !== null && lastChangeDate !== null) {
-//           if (!timeInState[previousState]) {
-//             timeInState[previousState] = 0;
-//           }
-//           timeInState[previousState] += Math.floor(
-//             (changeDate - lastChangeDate) / 1000
-//           );
-//         }
-//         previousState = currentState;
-//         lastChangeDate = changeDate;
-//       }
-//     });
-
-//     if (previousState !== null && lastChangeDate !== null) {
-//       if (!timeInState[previousState]) {
-//         timeInState[previousState] = 0;
-//       }
-//       timeInState[previousState] += Math.floor(
-//         (new Date() - lastChangeDate) / 1000
-//       );
-//     }
-
-//     let timeInStateHours = {
-//       "To Do": 0,
-//       Doing: 0,
-//       TESTING: 0,
-//       Done: 0,
-//     };
-
-//     Object.keys(timeInState).forEach((state) => {
-//       timeInStateHours[state] = timeInState[state];
-//     });
-
-//     console.log(timeInStateHours);
-
-//     res.status(200).json({
-//       data: timeInStateHours,
-//     });
-//   } catch (error) {
-//     console.error(`Controller error: ${error.message}`);
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
 exports.getTotalWorkItems = async (req, res) => {
   try {
     const totalWorkItem = await azureDevOpsService.getTotalWorkItems();
-    // console.log( totalWorkItem);
     res.status(200).json({
       data: totalWorkItem,
     });
@@ -422,14 +323,12 @@ exports.getAllWorkItemsHistory = async (req, res) => {
 
     for (const workItem of workItems) {
       const workItemId = workItem.id;
-      console.log(`Processing work item ${workItemId}`);
 
       try {
         const data = await azureDevOpsService.getWorkItemHistory(
           project,
           workItemId
         );
-        console.log(`Data for work item ${workItemId}:`, data);
 
         let stateChanges = [];
 
@@ -463,7 +362,7 @@ exports.getAllWorkItemsHistory = async (req, res) => {
           Doing: 0,
           TESTING: 0,
           Done: 0,
-          DevDone: 0,
+          "Dev-Done": 0,
         }; // Default structure for all states
 
         let previousState = null;
@@ -510,7 +409,7 @@ exports.getAllWorkItemsHistory = async (req, res) => {
           Doing: timeInState["Doing"] || 0,
           TESTING: timeInState["TESTING"] || 0,
           Done: timeInState["Done"] || 0,
-          DevDone: timeInState["DevDone"] || 0,
+          "Dev-Done": timeInState["Dev-Done"] || 0,
         };
 
         // Push the timeInState for each work item
@@ -533,125 +432,3 @@ exports.getAllWorkItemsHistory = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-// exports.getAllWorkItemsHistory = async (req, res) => {
-//   const { project } = req.body;
-
-//   if (!project) {
-//     console.error("Missing project parameter");
-//     return res
-//       .status(400)
-//       .json({ message: "Project is a required parameter." });
-//   }
-
-//   try {
-//     const workItemsResponse = await azureDevOpsService.getProjectWorkItems(
-//       project
-//     );
-//     const workItems = workItemsResponse.workItems;
-
-//     const workStartHour = 11;
-//     const workEndHour = 19;
-//     const workDays = [1, 2, 3, 4, 5, 6];
-
-//     // Store state times for each work item separately
-//     let workItemsStateTimes = [];
-
-//     for (const workItem of workItems) {
-//       const workItemId = workItem.id;
-//       console.log(`Processing work item ${workItemId}`);
-
-//       try {
-//         const data = await azureDevOpsService.getWorkItemHistory(
-//           project,
-//           workItemId
-//         );
-//         console.log(`Data for work item ${workItemId}:`, data);
-
-//         let stateChanges = [];
-
-//         data.value.forEach((update) => {
-//           const rev = update.rev;
-//           const newState = update.fields["System.State"]
-//             ? update.fields["System.State"].newValue
-//             : null;
-//           const changeDate = update.fields[
-//             "Microsoft.VSTS.Common.StateChangeDate"
-//           ]
-//             ? new Date(
-//                 update.fields["Microsoft.VSTS.Common.StateChangeDate"].newValue
-//               )
-//             : null;
-
-//           if (newState && changeDate) {
-//             stateChanges.push({
-//               revision: rev,
-//               state: newState,
-//               changeDate: changeDate,
-//             });
-//           }
-//         });
-
-//         // Sort state changes by change date
-//         stateChanges.sort((a, b) => a.changeDate - b.changeDate);
-
-//         let timeInState = {};
-//         let previousState = null;
-//         let lastChangeDate = null;
-
-//         stateChanges.forEach((change) => {
-//           const currentState = change.state;
-//           const changeDate = change.changeDate;
-
-//           if (currentState !== previousState) {
-//             if (previousState !== null && lastChangeDate !== null) {
-//               if (!timeInState[previousState]) {
-//                 timeInState[previousState] = 0;
-//               }
-//               timeInState[previousState] += calculateWorkingTime(
-//                 lastChangeDate,
-//                 changeDate,
-//                 workStartHour,
-//                 workEndHour,
-//                 workDays
-//               );
-//             }
-//             previousState = currentState;
-//             lastChangeDate = changeDate;
-//           }
-//         });
-
-//         // Add time in the last state until now
-//         if (previousState !== null && lastChangeDate !== null) {
-//           if (!timeInState[previousState]) {
-//             timeInState[previousState] = 0;
-//           }
-//           timeInState[previousState] += calculateWorkingTime(
-//             lastChangeDate,
-//             new Date(),
-//             workStartHour,
-//             workEndHour,
-//             workDays
-//           );
-//         }
-
-//         // Push the timeInState for each work item
-//         workItemsStateTimes.push({
-//           workItemId: workItemId,
-//           timeInState: timeInState,
-//         });
-//       } catch (error) {
-//         console.error(
-//           `Error processing work item ${workItemId}: ${error.message}`
-//         );
-//       }
-//     }
-
-//     res.status(200).json({
-//       workItemsStateTimes,
-//     });
-//   } catch (error) {
-//     console.error(`Controller error: ${error.message}`);
-//     res.status(500).json({ message: error.message });
-//   }
-// };

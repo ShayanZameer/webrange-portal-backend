@@ -12,7 +12,6 @@ exports.getTaskActivitiesController = async (req, res) => {
       taskId,
       patToken
     );
-    console.log(activities);
     res.status(200).json(activities);
   } catch (error) {
     res.status(500).json({
