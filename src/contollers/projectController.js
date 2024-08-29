@@ -230,6 +230,13 @@ exports.getTotalWorkItems = async (req, res) => {
 exports.getProjectsAndWorkItems = async (req, res) => {
   try {
     const projects = await azureDevOpsService.getProjects();
+    console.log("Projects response:", projects); // Log the response
+
+    if (!projects || !projects.value) {
+      throw new Error(
+        "Projects response does not have the expected structure."
+      );
+    }
 
     const projectPromises = projects.value.map((project) => {
       return azureDevOpsService
@@ -242,7 +249,6 @@ exports.getProjectsAndWorkItems = async (req, res) => {
         }));
     });
 
-    // Resolve all promises concurrently
     const projectsWithWorkItems = await Promise.all(projectPromises);
 
     res.status(200).json(projectsWithWorkItems);
@@ -251,6 +257,32 @@ exports.getProjectsAndWorkItems = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// exports.getProjectsAndWorkItems = async (req, res) => {
+//   try {
+//     const projects = await azureDevOpsService.getProjects();
+//     console.log("pp", projects);
+
+//     const projectPromises = projects.value.map((project) => {
+//       return azureDevOpsService
+//         .getProjectWorkItems(project.name)
+//         .then((workItems) => ({
+//           project: project.name,
+//           id: project.id,
+//           state: project.state,
+//           workItems,
+//         }));
+//     });
+
+//     // Resolve all promises concurrently
+//     const projectsWithWorkItems = await Promise.all(projectPromises);
+
+//     res.status(200).json(projectsWithWorkItems);
+//   } catch (error) {
+//     console.error(`Controller error: ${error.message}`);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 exports.getProjectWorkItems = async (req, res) => {
   const { projectName } = req.body;
