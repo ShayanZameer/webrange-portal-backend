@@ -1,17 +1,13 @@
 const axios = require("axios");
 const { get } = require("../routes/projectRoutes");
 
-const AZURE_ORGANIZATION_URL =
-  "https://vssps.dev.azure.com/webrange/_apis/graph/users?api-version=7.1-preview.1";
+const AZURE_ORGANIZATION_URL = `https://vssps.dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/graph/users?api-version=7.1-preview.1`;
 
-const AZURE_MEMBERSHIP_URL =
-  "https://vssps.dev.azure.com/webrange/_apis/graph/memberships/";
+const AZURE_MEMBERSHIP_URL = `https://vssps.dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/graph/memberships/`;
 
-const AZURE_PROJECTS_URL =
-  "https://dev.azure.com/webrange/_apis/projects?api-version=7.1-preview.4";
+const AZURE_PROJECTS_URL = `https://dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/projects?api-version=7.1-preview.4`;
 
-const AZURE_TEAM_URL =
-  "https://dev.azure.com/webrange/_apis/projects?api-version=6.0";
+const AZURE_TEAM_URL = `https://dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/projects?api-version=6.0`;
 
 const AZURE_TOKEN = process.env.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN;
 
@@ -43,7 +39,7 @@ const getProjectById = async (projectId) => {
 
   try {
     const response = await axios.get(
-      `https://dev.azure.com/webrange/_apis/projects/${projectId}?api-version=7.1-preview.4`,
+      `https://dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/projects/${projectId}?api-version=7.1-preview.4`,
       {
         headers: {
           Authorization: `Basic ${Buffer.from(":" + token).toString("base64")}`,
@@ -291,7 +287,7 @@ const getUserByEmail = async (email) => {
 
     // Step 2: Fetch all projects (remains unchanged)
     const response = await axios.get(
-      "https://dev.azure.com/webrange/_apis/projects?api-version=7.1-preview.4",
+      `https://dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/projects?api-version=7.1-preview.4`,
       {
         headers: {
           Authorization: `Basic ${Buffer.from(":" + token).toString("base64")}`,
@@ -305,7 +301,7 @@ const getUserByEmail = async (email) => {
     const projectPromises = projects.map(async (project) => {
       try {
         const projectTeamsResponse = await axios.get(
-          `https://dev.azure.com/webrange/_apis/projects/${project.id}/teams?api-version=7.0`,
+          `https://dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/projects/${project.id}/teams?api-version=7.0`,
           {
             headers: {
               Authorization: `Basic ${Buffer.from(":" + token).toString(
@@ -319,7 +315,7 @@ const getUserByEmail = async (email) => {
 
         const teamMemberPromises = teams.map(async (team) => {
           const teamMembersResponse = await axios.get(
-            `https://dev.azure.com/webrange/_apis/projects/${project.id}/teams/${team.id}/members?api-version=7.0`,
+            `https://dev.azure.com/${process.env.AZURE_ORG_NAME}/_apis/projects/${project.id}/teams/${team.id}/members?api-version=7.0`,
             {
               headers: {
                 Authorization: `Basic ${Buffer.from(":" + token).toString(

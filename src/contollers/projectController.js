@@ -1,54 +1,5 @@
 const azureDevOpsService = require("../services/azureServices");
 
-//this is helpers function to get the work item history
-
-// const calculateWorkHours = (startDate, endDate) => {
-//   const workStartHour = 11; // 11 AM
-//   const workEndHour = 19; // 7 PM
-//   const msPerHour = 1000 * 60 * 60;
-
-//   const workHours = (start, end) => {
-//     let hours = 0;
-//     let current = new Date(start);
-//     current.setHours(workStartHour, 0, 0, 0);
-
-//     while (current < end) {
-//       let workEnd = new Date(current);
-//       workEnd.setHours(workEndHour);
-//       workEnd = workEnd > end ? end : workEnd;
-//       hours += Math.max(0, (workEnd - current) / msPerHour);
-
-//       current.setDate(current.getDate() + 1);
-//       current.setHours(workStartHour, 0, 0, 0);
-//     }
-
-//     return hours;
-//   };
-
-//   const excludeSundays = (start, end) => {
-//     let totalHours = 0;
-//     let current = new Date(start);
-//     while (current < end) {
-//       if (current.getDay() !== 0) {
-//         // Exclude Sundays
-//         const dayEnd = new Date(current);
-//         dayEnd.setHours(workEndHour, 0, 0, 0);
-//         if (dayEnd > end) {
-//           totalHours += workHours(current, end);
-//         } else {
-//           totalHours += workHours(current, dayEnd);
-//         }
-//       }
-//       current.setDate(current.getDate() + 1);
-//       current.setHours(workStartHour, 0, 0, 0);
-//     }
-
-//     return totalHours;
-//   };
-
-//   return excludeSundays(startDate, endDate);
-// };
-
 const calculateWorkHours = (startDate, endDate) => {
   const workStart = 9; // 9 AM
   const workEnd = 17; // 5 PM
