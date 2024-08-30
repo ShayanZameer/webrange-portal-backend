@@ -354,21 +354,54 @@ const getUserByEmail = async (email) => {
   }
 };
 
+// const getTaskActivities = async (orgName, project, taskId, patToken) => {
+//   const url = `https://dev.azure.com/${orgName}/${project}/_apis/wit/workitems/${taskId}/revisions?api-version=7.0`;
+
+//   try {
+//     const response = await fetch(url, {
+//       method: "GET",
+//       headers: {
+//         Authorization: `Basic ${Buffer.from(`:${patToken}`).toString(
+//           "base64"
+//         )}`, // Encodes PAT
+//         "Content-Type": "application/json",
+//       },
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`Error fetching activities: ${response.statusText}`);
+//     }
+
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Error fetching task activities:", error);
+//     throw error;
+//   }
+// };
+
 const getTaskActivities = async (orgName, project, taskId, patToken) => {
   const url = `https://dev.azure.com/${orgName}/${project}/_apis/wit/workitems/${taskId}/revisions?api-version=7.0`;
 
   try {
+    console.log("Request URL:", url);
+
     const response = await fetch(url, {
       method: "GET",
       headers: {
         Authorization: `Basic ${Buffer.from(`:${patToken}`).toString(
           "base64"
-        )}`, // Encodes PAT
+        )}`,
         "Content-Type": "application/json",
       },
     });
 
+    console.log("Response Status:", response.status);
+    console.log("Response Status Text:", response.statusText);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Error Response:", errorText);
       throw new Error(`Error fetching activities: ${response.statusText}`);
     }
 
