@@ -8,6 +8,10 @@ require("dotenv").config();
 
 app.use(cors());
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Azure Team Project");
+});
+
 app.use(express.json());
 app.use("/api/projects", projectRoutes);
 app.use("/api/user", userRoutes);
