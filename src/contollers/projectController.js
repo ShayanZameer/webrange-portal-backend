@@ -230,7 +230,6 @@ exports.getTotalWorkItems = async (req, res) => {
 exports.getProjectsAndWorkItems = async (req, res) => {
   try {
     const projects = await azureDevOpsService.getProjects();
-    console.log("pp", projects);
 
     const projectPromises = projects.value.map((project) => {
       return azureDevOpsService

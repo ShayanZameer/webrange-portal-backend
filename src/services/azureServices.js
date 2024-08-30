@@ -25,7 +25,7 @@ const getProjects = async () => {
       `${orgUrl}/_apis/projects?api-version=6.0`,
       config
     );
-
+    console.log("resrponse value ", response.data);
     return response.data;
   } catch (error) {
     throw new Error(`Failed to fetch projects: ${error.message}`);
